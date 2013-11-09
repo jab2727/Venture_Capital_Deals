@@ -15,16 +15,16 @@ def slice(text):	# looks at the first company's set of data
 
 	if text.find("<p>")>=0 and (text.find("<p>") < text.find("<strong><br />") or text.find("<strong><br />") < 0):
 		index1=text.index("<p>")
-		print "I found the first <p>"
+#		print "I found the first <p>"
 	elif text.find("<strong><br />")>=0:		
 		index1=text.index("<strong><br />")
-		print "I found the first <br /><strong><br /> at %s" % (index1)
+#		print "I found the first <br /><strong><br /> at %s" % (index1)
 	else:
-		print "I switched off immediately"
+#		print "I switched off immediately"
 		switch=1
 		
 	if text.find("<strong><br />") == 0:
-		print "I've entered the loop..."
+#		print "I've entered the loop..."
 		n=2
 		start=text.find("<strong><br />")
 		while n >1:
@@ -32,25 +32,24 @@ def slice(text):	# looks at the first company's set of data
 			n += -1			
 		if  text.find("</p>")>0 and (text.find("</p>") < start or start<0):
 			index2=text.index("</p>")+4
-			print "and I found a /p"
+#			print "and I found a /p"
 		else:
-			print "and I found a <br /><strong><br /> at %s" % (start)
+#			print "and I found a <br /><strong><br /> at %s" % (start)
 			index2=start
 	elif text.find("</p>") > 0 and text.find("<strong><br />") <0:
-		print "Skipped the loop and found a /p"
+#		print "Skipped the loop and found a /p"
 		index2=text.index("</p>")+4
 	elif text.find("</p>") > 0 and text.find("<strong><br />") > text.find("</p>"):
-		print "Skipped the loop and found a /p"
+#		print "Skipped the loop and found a /p"
 		index2=text.index("</p>")+4
 	elif text.find("<strong><br />")>0:
-		print "I skipped the loop and found a <br /><strong><br />"
+#		print "I skipped the loop and found a <br /><strong><br />"
 		index2=text.index("<strong><br />")
 	else:
-		print "I hit the second off switch"
+#		print "I hit the second off switch"
 		switch=1
 	
 	if switch==1:
-		print
 		a=[]
 	else:	
 		a= text[index1:index2]
@@ -130,23 +129,20 @@ def get_capital(text):		# gets the value raised
 	if switch==1:
 		capital="Capital not found :/"
 	else:
-		capital = text[index1:index2]
-	return capital
+		try:
+			return float(text[index1:index2])
+		except:
+			return ""
 	
 def get_series(text):	# gets the series round
 	if text.find("million")>0:
-		words = text[text.index("million"):text.index("million")+30]
+		words = text[text.index("million"):text.index("million")+35]
 	elif text.find("amount")>0:
-		words = text[text.index("amount"):text.index("amount")+30]
+		words = text[text.index("amount"):text.index("amount")+35]
 	else:
 		words=""
-	words= words.split()	
-	switch=0
-	for word in words:
-		if word=="Series":
-			switch+=1
-	if switch>0:
-		return words[words.index("Series")+1]
+	if words.find("Series")>0 and words.find("Series")<25:
+		return words[words.index("Series")+7]
 	else:
 		return "Series not specified"
 
@@ -168,7 +164,8 @@ def get_vc(text):
 		index2=0
  	
  	passage = text[index1:index2]
-	passage = passage.replace("<strong>"," ").replace("</strong>","").replace(">","").replace("<"," ").replace("\xc2\xa0"," ").replace("\xc3\xa9","e").replace("."," ").replace(" return",",")
+	passage = passage.replace("<strong>"," ").replace("</strong>","").replace(">","").replace("<"," ")
+	passage = passage.replace("\xc2\xa0"," ").replace("\xc3\xa9","e").replace("."," ").replace(" return",",").replace("\x82\xac","")
 	passage = passage.split(", ")
 
 	frag_list=[]
@@ -209,5 +206,7 @@ for i in range(len(sitelist)):
 		print
 		print
 
-#print deal_list
+print deal_list
+
+
 json.dump(deal_list, open("investment_list.txt", "w"))
