@@ -13,40 +13,40 @@ def slice(text):	# looks at the first company's set of data
 	text=str(text)
 	switch=0
 
-	if text.find("<p>")>=0:
+	if text.find("<p>")>=0 and (text.find("<p>") < text.find("<strong><br />") or text.find("<strong><br />") < 0):
 		index1=text.index("<p>")
-#		print "I found the first <p>"
-	elif text.find("<strong><br />")>=0:
-#		print "I found the first <br /><strong><br />"
+		print "I found the first <p>"
+	elif text.find("<strong><br />")>=0:		
 		index1=text.index("<strong><br />")
+		print "I found the first <br /><strong><br /> at %s" % (index1)
 	else:
-#		print "I switched off immediately"
+		print "I switched off immediately"
 		switch=1
 		
 	if text.find("<strong><br />") == 0:
-#		print "I've entered the loop..."
+		print "I've entered the loop..."
 		n=2
 		start=text.find("<strong><br />")
 		while n >1:
 			start=text.find("<strong><br />", start+len("<strong><br />"))
 			n += -1			
-		if text.find("</p>") < start and text.find("</p>")>0:
+		if  text.find("</p>")>0 and (text.find("</p>") < start or start<0):
 			index2=text.index("</p>")+4
-#			print "and I found a /p"
+			print "and I found a /p"
 		else:
-#			print "and I found a <br /><strong><br />"
+			print "and I found a <br /><strong><br /> at %s" % (start)
 			index2=start
 	elif text.find("</p>") > 0 and text.find("<strong><br />") <0:
-#		print "Skipped the loop and found a /p"
+		print "Skipped the loop and found a /p"
 		index2=text.index("</p>")+4
 	elif text.find("</p>") > 0 and text.find("<strong><br />") > text.find("</p>"):
-#		print "Skipped the loop and found a /p"
+		print "Skipped the loop and found a /p"
 		index2=text.index("</p>")+4
 	elif text.find("<strong><br />")>0:
-#		print "I skipped the loop and found a <br /><strong><br />"
+		print "I skipped the loop and found a <br /><strong><br />"
 		index2=text.index("<strong><br />")
 	else:
-#		print "I hit the second off switch"
+		print "I hit the second off switch"
 		switch=1
 	
 	if switch==1:
@@ -64,7 +64,7 @@ def dice(text):		# cuts the first company's data out of remaining data
 		while n >1:
 			start=text.find("<strong><br />", start+len("<strong><br />"))
 			n += -1			
-		if text.find("</p>") < start and text.find("</p>")>0:
+		if text.find("</p>")>0 and (text.find("</p>") < start or start<0):
 			a=text[text.index("</p>")+4:len(text)]
 		else:
 			a=text[start:len(text)]
@@ -114,9 +114,9 @@ def get_description(text):	# gets the text description of the company
 def get_capital(text):		# gets the value raised
 	switch=0
 	if text.find("raised")>0:
-		index1=text.index("raised")+6
+		index1=text.index("raised")+8
 	elif text.find("secured")>0:
-		index1=text.index("secured")+7
+		index1=text.index("secured")+9
 	else:
 		switch=1
 	
@@ -202,12 +202,12 @@ for i in range(len(sitelist)):
 		deal_list[get_name(snippet)] = {'Description': get_description(snippet), 
 		'Capital': get_capital(snippet), 'Series':get_series(snippet),'VC':get_vc(snippet)}
 		key_passage=dice(key_passage)
-#		print
-#		print snippet
-#		print 
-#		print deal_list[get_name(snippet)]
-#		print
-#		print
+		print
+		print snippet
+		print 
+		print deal_list[get_name(snippet)]
+		print
+		print
 
-print deal_list
+#print deal_list
 json.dump(deal_list, open("investment_list.txt", "w"))
